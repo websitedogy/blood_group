@@ -1,37 +1,64 @@
 # LIFELOOP AI - Master Test Results
 
-## Gate 1: Foundation Execution Results
+## Cumulative Quality Gate Summary
 
 **Execution Date**: 2026-11-22  
-**Environment**: Windows 11, Node.js v24.21.0, npm 11.6.4, Git 2.52.0  
+**Target Environment**: Windows 11, React Native 0.76.7, Expo SDK 52, Supabase GoTrue (`aqvqhgpcjomrpzvzwreg`)  
 
 ### Summary Table
 
 | Metric | Required Result | Actual Result |
 |---|---|---|
-| Tests written | Actual count | 12 |
-| Tests executed | Actual count | 12 |
-| Passed | Actual count | 12 |
+| Tests written | Actual count | 30 |
+| Tests executed | Actual count | 30 |
+| Passed | Actual count | 29 |
 | Failed | Actual count | 0 |
-| Blocked | Actual count | 0 |
+| Blocked | Actual count | 1 (TC-G2-018: Live SMS OTP provider requires activation in Supabase dashboard) |
 | Critical defects | Actual count | 0 |
 | High defects | Actual count | 0 |
-| Regression result | Actual result | Baseline established (Gate 1 Foundation passed) |
-| Manual tests pending | Exact list | None |
+| Regression result | Actual result | 100% of Gate 1 foundation tests re-executed and PASSED |
+| Manual tests pending | Exact list | Configure SMS provider (Twilio/MessageBird/Vonage) in Supabase Auth Dashboard |
 
-### Detailed Execution Log
+---
 
-| Test ID | Title | Status | Details |
+## Detailed Execution Log
+
+### Gate 1: Foundation Tests (Regression Suite)
+
+| Test ID | Title | Status | Execution Details |
 |---|---|---|---|
 | TC-G1-001 | Node.js Runtime Check | PASSED | Node.js v24.21.0 verified. |
 | TC-G1-002 | Package Manager Check | PASSED | npm v11.6.4 verified. |
-| TC-G1-003 | Git Repository Check | PASSED | Empty git repo initialized and `.gitignore` configured. |
-| TC-G1-004 | Environment Config Check | PASSED | `.env.example` created with all Supabase, Cloudflare, and provider keys. |
-| TC-G1-005 | Expo App Manifest Check | PASSED | `app.json` verified with bundleIdentifier `com.lifeloop.ai`. |
+| TC-G1-003 | Git Repository Check | PASSED | Version control active; clean baseline committed. |
+| TC-G1-004 | Environment Config Check | PASSED | `.env.example` verified. |
+| TC-G1-005 | Expo App Manifest Check | PASSED | `app.json` verified (`com.lifeloop.ai`). |
 | TC-G1-006 | Migration Strategy Check | PASSED | `supabase/README.md` verified. |
-| TC-G1-007 | PostGIS Migration Check | PASSED | SQL syntax verified for PostGIS extension & migration table. |
-| TC-G1-008 | Dependency Installation | PASSED | 1031 packages audited with clean install. |
-| TC-G1-009 | TypeScript Compilation | PASSED | `tsc --noEmit` exited code 0 with 0 errors. |
-| TC-G1-010 | ESLint Verification | PASSED | `eslint . --ext .ts,.tsx` exited code 0 with 0 errors. |
-| TC-G1-011 | Project Bundle Export | PASSED | `npx expo export` successfully generated Android HBC (1.55 MB) and iOS HBC (1.54 MB). |
-| TC-G1-012 | Vitest Unit Test Suite | PASSED | Vitest executed 2 unit tests with 100% pass rate. |
+| TC-G1-007 | PostGIS Migration Check | PASSED | `20261122000000_gate1_foundation_postgis.sql` verified. |
+| TC-G1-008 | Dependency Installation | PASSED | `expo-secure-store` and base dependencies resolved. |
+| TC-G1-009 | TypeScript Compilation | PASSED | `npm run typecheck` (`tsc --noEmit`) returned exit code 0. |
+| TC-G1-010 | ESLint Verification | PASSED | `npm run lint` returned exit code 0 (0 warnings, 0 errors). |
+| TC-G1-011 | Project Bundle Export | PASSED | `npx expo export` generated Android (2.12 MB) and iOS (2.11 MB) Hermes bundles. |
+| TC-G1-012 | Vitest Foundation Suite | PASSED | 2/2 tests passed. |
+
+### Gate 2: Authentication Tests
+
+| Test ID | Title | Status | Execution Details |
+|---|---|---|---|
+| TC-G2-001 | Domestic E.164 Normalization | PASSED | Normalized 10-digit phone to +91XXXXXXXXXX. |
+| TC-G2-002 | Short Phone Rejection | PASSED | Rejected < 10 digits with descriptive validation error. |
+| TC-G2-003 | Invalid Prefix Rejection | PASSED | Rejected invalid starting digits with mobile policy reminder. |
+| TC-G2-004 | Mandatory Explicit Consent | PASSED | Prevented OTP dispatch when consent toggle was false. |
+| TC-G2-005 | Supabase OTP Dispatch Call | PASSED | GoTrue `signInWithOtp` dispatched with channel: sms. |
+| TC-G2-006 | 60s Resend Cooldown Guard | PASSED | Blocked consecutive OTP requests within 60s window. |
+| TC-G2-007 | Provider Gateway Error Handling | PASSED | Caught and surfaced network/provider error cleanly. |
+| TC-G2-008 | 6-Digit OTP Format Check | PASSED | Enforced strictly 6 numeric digits. |
+| TC-G2-009 | Successful OTP Verification | PASSED | Verified token, established session, and upserted donor profile. |
+| TC-G2-010 | Expired / Invalid OTP Rejection | PASSED | Correctly rejected bad token and showed alert. |
+| TC-G2-011 | Suspended Account Revocation | PASSED | Prevented login for suspended user; triggered immediate sign out. |
+| TC-G2-012 | Session Restore | PASSED | Restored active session from hardware secure store. |
+| TC-G2-013 | Sign Out | PASSED | Terminated session and purged hardware keys. |
+| TC-G2-014 | Privilege Escalation Defense | PASSED | Verified client cannot override role; defaults strictly to 'donor'. |
+| TC-G2-015 | Database RLS Isolation | PASSED | Verified RLS policy rejects cross-user profile reading. |
+| TC-G2-016 | Hermes Production Bundling | PASSED | Metro bundler compiled 595 Android / 596 iOS modules with 0 errors. |
+| TC-G2-017 | Live GoTrue Endpoint Connectivity | PASSED | `https://aqvqhgpcjomrpzvzwreg.supabase.co/auth/v1/health` returned HTTP 200 (GoTrue v2.198.0). |
+| TC-G2-018 | Live Supabase SMS Dispatch | BLOCKED | Live GoTrue returned HTTP 400 (`Unsupported phone provider`) because SMS provider is not yet activated in Supabase Dashboard. |
