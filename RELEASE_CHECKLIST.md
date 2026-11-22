@@ -25,7 +25,21 @@
   - [x] Android & iOS production Hermes bundle export passed (`dist/` verified).
   - [x] Live Supabase GoTrue endpoint verified (`https://aqvqhgpcjomrpzvzwreg.supabase.co`).
   - [ ] Live SMS Gateway provider activated in Supabase Dashboard (Twilio/MessageBird/Vonage).
-- [ ] **Gate 3 – Donor Profiles**
+- [x] **Gate 3 – Donor Profiles**
+  - [x] Database schema, PostGIS geometry synchronization trigger, and strict RLS written (`supabase/migrations/20261122000002_donor_profiles_rls.sql`).
+  - [x] Clinical blood group validation (`A+`, `A-`, `B+`, `B-`, `AB+`, `AB-`, `O+`, `O-`) and radius clamping (1–50 km).
+  - [x] Donor registration and profile updating implemented (`donorService.saveDonorProfile`).
+  - [x] Real-time emergency availability toggle implemented (`donorService.setAvailability`).
+  - [x] Notification pause and resume toggle implemented (`donorService.setNotificationsPaused`).
+  - [x] Notification alert radius adjustment implemented (`donorService.setNotificationRadius`).
+  - [x] Multi-channel communication preferences implemented (`donorService.setPreferredChannels`).
+  - [x] Atomic consent withdrawal workflow implemented (`donorService.withdrawConsent`).
+  - [x] Emergency response history tracking implemented (`donorService.getResponseHistory`, `donorService.recordResponse`).
+  - [x] Complete UI Action Inventory for Donor Dashboard documented (`UI_ACTION_INVENTORY.md`).
+  - [x] Automated test suite passed (52/52 tests passed across 3 test files in Vitest).
+  - [x] TypeScript check passed (`npm run typecheck` - 0 errors).
+  - [x] ESLint passed (`npm run lint` - 0 warnings/errors).
+  - [x] Production Hermes bundle export passed (`npx expo export` - 0 errors).
 - [ ] **Gate 4 – Emergency Requests & Matching**
 - [ ] **Gate 5 – Notifications**
 - [ ] **Gate 6 – Responses, Chat & Contact Consent**

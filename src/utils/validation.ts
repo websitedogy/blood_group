@@ -1,3 +1,5 @@
+import { BloodGroup, NotificationChannel } from '../types/donor';
+
 /**
  * Validates and normalizes phone numbers into E.164 format.
  * LIFELOOP AI standard default prefix is +91 (India) if 10-digit format is entered.
@@ -49,4 +51,41 @@ export function validateOtpToken(token: string): { isValid: boolean; error?: str
   }
 
   return { isValid: true };
+}
+
+export const VALID_BLOOD_GROUPS: BloodGroup[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+export const VALID_NOTIFICATION_CHANNELS: NotificationChannel[] = ['push', 'sms', 'whatsapp', 'email'];
+
+/**
+ * Validates blood group format against approved clinical types.
+ */
+export function validateBloodGroup(bloodGroup: string): { isValid: boolean; value?: BloodGroup; error?: string } {
+  if (!bloodGroup || typeof bloodGroup !== 'string') {
+    return { isValid: false, error: 'Blood group is required.' };
+  }
+
+  const normalized = bloodGroup.trim().toUpperCase() as BloodGroup;
+  if (!VALID_BLOOD_GROUPS.includes(normalized)) {
+    return {
+      isValid: false,
+      error: `Invalid blood group '${bloodGroup}'. Must be one of: ${VALID_BLOOD_GROUPS.join(', ')}`,
+    };
+  }
+
+  return { isValid: true, value: normalized };
+}
+
+/**
+ * Validates notification alert radius (between 1 and 50 km).
+ */
+export function validateRadius(radius: number): { isValid: boolean; value?: number; error?: string } {
+  if (typeof radius !== 'number' || isNaN(radius)) {
+    return { isValid: false, error: 'Radius must be a valid number.' };
+  }
+
+  if (radius < 1 || radius > 50) {
+    return { isValid: false, error: 'Notification radius must be between 1 km and 50 km.' };
+  }
+
+  return { isValid: true, value: Math.round(radius) };
 }

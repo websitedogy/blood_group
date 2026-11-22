@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { authService } from '../../services/authService';
 import { UserProfile } from '../../types/auth';
+import DonorDashboardScreen from '../donor/DonorDashboardScreen';
 
 export default function AuthScreen(): React.JSX.Element {
   // Screen and form state
@@ -26,7 +27,7 @@ export default function AuthScreen(): React.JSX.Element {
 
   // Authenticated state
   const [authenticatedUser, setAuthenticatedUser] = useState<{ id: string; phone?: string } | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [, setUserProfile] = useState<UserProfile | null>(null);
 
   // Cooldown interval reference
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -125,42 +126,14 @@ export default function AuthScreen(): React.JSX.Element {
     setLoading(false);
   };
 
-  // Authenticated Dashboard View
+  // Authenticated View: Donor Control Center & Dashboard
   if (authenticatedUser) {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.headerTitle} accessibilityRole="header">
-          LIFELOOP AI Dashboard
-        </Text>
-        <Text style={styles.sessionStatus}>Status: Authenticated</Text>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Profile Information</Text>
-          <Text style={styles.cardItem}>User ID: {authenticatedUser.id}</Text>
-          <Text style={styles.cardItem}>Phone: {authenticatedUser.phone || phone}</Text>
-          <Text style={styles.cardItem}>Role: {userProfile?.role || 'donor'}</Text>
-          <Text style={styles.cardItem}>Account Status: {userProfile?.status || 'active'}</Text>
-          <Text style={styles.cardItem}>
-            Consent Recorded: {userProfile?.consent_given ? 'Yes' : 'Pending'}
-          </Text>
-        </View>
-
-        {successMessage && <Text style={styles.successBanner}>{successMessage}</Text>}
-
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={handleLogout}
-          disabled={loading}
-          accessibilityLabel="Log out of LIFELOOP"
-          accessibilityRole="button"
-        >
-          {loading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.logoutButtonText}>Log Out</Text>
-          )}
-        </TouchableOpacity>
-      </ScrollView>
+      <DonorDashboardScreen
+        userId={authenticatedUser.id}
+        phone={authenticatedUser.phone || phone}
+        onLogout={handleLogout}
+      />
     );
   }
 
@@ -322,32 +295,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24,
   },
-  sessionStatus: {
-    fontSize: 14,
-    color: '#059669',
-    textAlign: 'center',
-    marginBottom: 16,
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#111827',
-  },
-  cardItem: {
-    fontSize: 14,
-    color: '#374151',
-    marginBottom: 6,
-  },
   inputContainer: {
     marginBottom: 16,
   },
@@ -435,17 +382,6 @@ const styles = StyleSheet.create({
   textDisabled: {
     color: '#9ca3af',
   },
-  logoutButton: {
-    backgroundColor: '#4b5563',
-    borderRadius: 6,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '600',
-  },
   otpSection: {
     marginTop: 8,
   },
@@ -472,12 +408,5 @@ const styles = StyleSheet.create({
   successText: {
     color: '#065f46',
     fontSize: 13,
-  },
-  successBanner: {
-    color: '#059669',
-    textAlign: 'center',
-    marginBottom: 14,
-    fontSize: 14,
-    fontWeight: '500',
   },
 });

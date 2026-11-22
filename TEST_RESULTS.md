@@ -3,20 +3,20 @@
 ## Cumulative Quality Gate Summary
 
 **Execution Date**: 2026-11-22  
-**Target Environment**: Windows 11, React Native 0.76.7, Expo SDK 52, Supabase GoTrue (`aqvqhgpcjomrpzvzwreg`)  
+**Target Environment**: Windows 11, React Native 0.76.7, Expo SDK 52, Supabase PostGIS (`aqvqhgpcjomrpzvzwreg`)  
 
 ### Summary Table
 
 | Metric | Required Result | Actual Result |
 |---|---|---|
-| Tests written | Actual count | 30 |
-| Tests executed | Actual count | 30 |
-| Passed | Actual count | 29 |
+| Tests written | Actual count | 48 |
+| Tests executed | Actual count | 48 |
+| Passed | Actual count | 47 |
 | Failed | Actual count | 0 |
 | Blocked | Actual count | 1 (TC-G2-018: Live SMS OTP provider requires activation in Supabase dashboard) |
 | Critical defects | Actual count | 0 |
 | High defects | Actual count | 0 |
-| Regression result | Actual result | 100% of Gate 1 foundation tests re-executed and PASSED |
+| Regression result | Actual result | 100% of Gate 1 & 2 tests re-executed and PASSED |
 | Manual tests pending | Exact list | Configure SMS provider (Twilio/MessageBird/Vonage) in Supabase Auth Dashboard |
 
 ---
@@ -34,13 +34,13 @@
 | TC-G1-005 | Expo App Manifest Check | PASSED | `app.json` verified (`com.lifeloop.ai`). |
 | TC-G1-006 | Migration Strategy Check | PASSED | `supabase/README.md` verified. |
 | TC-G1-007 | PostGIS Migration Check | PASSED | `20261122000000_gate1_foundation_postgis.sql` verified. |
-| TC-G1-008 | Dependency Installation | PASSED | `expo-secure-store` and base dependencies resolved. |
+| TC-G1-008 | Dependency Installation | PASSED | Base dependencies resolved cleanly. |
 | TC-G1-009 | TypeScript Compilation | PASSED | `npm run typecheck` (`tsc --noEmit`) returned exit code 0. |
 | TC-G1-010 | ESLint Verification | PASSED | `npm run lint` returned exit code 0 (0 warnings, 0 errors). |
-| TC-G1-011 | Project Bundle Export | PASSED | `npx expo export` generated Android (2.12 MB) and iOS (2.11 MB) Hermes bundles. |
+| TC-G1-011 | Project Bundle Export | PASSED | `npx expo export` generated Hermes bundles with 0 errors. |
 | TC-G1-012 | Vitest Foundation Suite | PASSED | 2/2 tests passed. |
 
-### Gate 2: Authentication Tests
+### Gate 2: Authentication Tests (Regression Suite)
 
 | Test ID | Title | Status | Execution Details |
 |---|---|---|---|
@@ -59,6 +59,29 @@
 | TC-G2-013 | Sign Out | PASSED | Terminated session and purged hardware keys. |
 | TC-G2-014 | Privilege Escalation Defense | PASSED | Verified client cannot override role; defaults strictly to 'donor'. |
 | TC-G2-015 | Database RLS Isolation | PASSED | Verified RLS policy rejects cross-user profile reading. |
-| TC-G2-016 | Hermes Production Bundling | PASSED | Metro bundler compiled 595 Android / 596 iOS modules with 0 errors. |
-| TC-G2-017 | Live GoTrue Endpoint Connectivity | PASSED | `https://aqvqhgpcjomrpzvzwreg.supabase.co/auth/v1/health` returned HTTP 200 (GoTrue v2.198.0). |
-| TC-G2-018 | Live Supabase SMS Dispatch | BLOCKED | Live GoTrue returned HTTP 400 (`Unsupported phone provider`) because SMS provider is not yet activated in Supabase Dashboard. |
+| TC-G2-016 | Hermes Production Bundling | PASSED | Metro bundler compiled modules with 0 errors. |
+| TC-G2-017 | Live GoTrue Endpoint Connectivity | PASSED | `https://aqvqhgpcjomrpzvzwreg.supabase.co/auth/v1/health` returned HTTP 200. |
+| TC-G2-018 | Live Supabase SMS Dispatch | BLOCKED | Live GoTrue returned HTTP 400 (`Unsupported phone provider`) pending provider config. |
+
+### Gate 3: Donor Profiles Tests
+
+| Test ID | Title | Status | Execution Details |
+|---|---|---|---|
+| TC-G3-001 | Clinical Blood Group Types | PASSED | Verified A+, A-, B+, B-, AB+, AB-, O+, O-. |
+| TC-G3-002 | Blood Group Normalization | PASSED | Case insensitive handling verified. |
+| TC-G3-003 | Invalid Blood Group Rejection | PASSED | Rejected non-existent clinical groups (C+, Rh+). |
+| TC-G3-004 | Empty Blood Group Rejection | PASSED | Required field validation verified. |
+| TC-G3-005 | Donor Registration Save | PASSED | `donor_profiles.upsert` with defaults verified. |
+| TC-G3-006 | Radius Boundary Validation | PASSED | 1 km to 50 km boundary check passed. |
+| TC-G3-007 | Out-of-Bounds Radius Rejection | PASSED | Rejected 0 km and > 50 km. |
+| TC-G3-008 | Availability Toggle | PASSED | Real-time `is_available` switch verified. |
+| TC-G3-009 | Pause Notifications Toggle | PASSED | Notification pause and resume verified. |
+| TC-G3-010 | Communication Channels | PASSED | Validated channels, enforced non-empty channel selection. |
+| TC-G3-011 | Consent Withdrawal Flow | PASSED | Revoked consent and paused alerts verified. |
+| TC-G3-012 | Empty Response History | PASSED | Verified clean empty state handling. |
+| TC-G3-013 | Retrieve Response History | PASSED | Chronological history records retrieved verified. |
+| TC-G3-014 | Record Emergency Response | PASSED | Inserted response status ('accepted') verified. |
+| TC-G3-015 | Donor RLS Isolation | PASSED | Cross-donor queries blocked under RLS. |
+| TC-G3-016 | PostGIS Coordinate Privacy | PASSED | Private coordinates protected from public exposure. |
+| TC-G3-017 | PostGIS Location Sync Trigger | PASSED | DDL trigger definition verified. |
+| TC-G3-018 | Production Hermes Bundle Export | PASSED | Bundled 598 modules on iOS (2.14 MB) & 597 on Android (2.15 MB). |

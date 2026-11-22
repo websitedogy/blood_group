@@ -29,3 +29,18 @@
 | SEC-G2-005 | Row-Level Security (RLS) Isolation | PASSED | RLS enabled on `public.profiles`. Policy `profiles_select_own` restricts queries strictly to `auth.uid() = id`. Cross-user data harvesting blocked. |
 | SEC-G2-006 | Suspended Account Enforcement | PASSED | `restoreSession` and `verifyOtp` verify `status === 'active'`. Suspended accounts are immediately signed out and blocked from access. |
 | SEC-G2-007 | Rate Limiting & Cooldown Protection | PASSED | 60-second cooldown enforced in `authService` against OTP brute-forcing and duplicate SMS dispatch spam. |
+
+---
+
+## Gate 3: Donor Profiles & PostGIS Privacy Assessment
+
+**Assessment Date**: 2026-11-22  
+**Scope**: PostGIS coordinate protection, medical blood group validation, RLS data boundaries, and consent revocation.
+
+| Check Item | Description | Result | Details |
+|---|---|---|---|
+| SEC-G3-001 | Exact Location Privacy | PASSED | Exact geographic coordinates (`latitude`, `longitude`, `location`) are protected under strict RLS (`auth.uid() = id`). Public queries cannot access raw coordinates. |
+| SEC-G3-002 | Medical Validation Integrity | PASSED | Input validation strictly enforces 8 clinical blood groups (`A+`, `A-`, `B+', 'B-', 'AB+', 'AB-', 'O+', 'O-`) with database-level `CHECK` constraints. Non-clinical strings rejected. |
+| SEC-G3-003 | Immediate Consent Revocation | PASSED | `withdrawConsent` cascades immediately: marks `consent_given = false`, flips `is_available = false`, and pauses notifications in one atomic workflow. |
+| SEC-G3-004 | Response History Isolation | PASSED | Policy `donor_responses_select_own` restricts emergency response history strictly to `auth.uid() = donor_id`. |
+| SEC-G3-005 | Alert Radius Clamping | PASSED | Enforces hard bounds of 1 km to 50 km on client and PostgreSQL constraint (`CHECK (notification_radius_km BETWEEN 1 AND 50)`). Prevents denial of service or broadcast overreach. |

@@ -39,3 +39,26 @@
 | TC-G2-016 | Build | Production Hermes bundle export | `npx expo export` bundles AuthScreen cleanly on Android & iOS | Automated / CLI | PASSED |
 | TC-G2-017 | Integration | Real Supabase Auth GoTrue endpoint | `https://aqvqhgpcjomrpzvzwreg.supabase.co/auth/v1/health` returns 200 OK | Automated / Live API | PASSED |
 | TC-G2-018 | Integration | Live SMS OTP dispatch | Live SMS dispatch to real phone number via Supabase | Automated / Live API | BLOCKED (Phone provider not configured in Supabase Dashboard) |
+
+## Gate 3: Donor Profiles Test Cases
+
+| Test ID | Test Category | Description | Expected Result | Execution Type | Status |
+|---|---|---|---|---|---|
+| TC-G3-001 | Validation | Clinical blood group valid types | Accepts 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-' | Automated / Vitest | PASSED |
+| TC-G3-002 | Validation | Blood group normalization | Normalizes case ('o+' -> 'O+') cleanly | Automated / Vitest | PASSED |
+| TC-G3-003 | Validation | Invalid blood group rejection | Rejects non-existent blood types (e.g. 'C+', 'Rh+') | Automated / Vitest | PASSED |
+| TC-G3-004 | Validation | Empty blood group rejection | Rejects empty blood group with descriptive error | Automated / Vitest | PASSED |
+| TC-G3-005 | Profile | Register donor profile with blood group | Upserts profile in `donor_profiles` with defaults | Automated / Vitest | PASSED |
+| TC-G3-006 | Radius | Radius boundary validation | Accepts values between 1 and 50 km; rounds decimals | Automated / Vitest | PASSED |
+| TC-G3-007 | Radius | Out-of-bounds radius rejection | Rejects radius < 1 km or > 50 km | Automated / Vitest | PASSED |
+| TC-G3-008 | Availability | Toggle donor availability | Switches `is_available` between true and false | Automated / Vitest | PASSED |
+| TC-G3-009 | Preferences | Pause / resume notifications | Switches `notifications_paused` between true and false | Automated / Vitest | PASSED |
+| TC-G3-010 | Channels | Update notification channels | Saves valid channel array; rejects empty array | Automated / Vitest | PASSED |
+| TC-G3-011 | Consent | Consent withdrawal flow | Revokes consent, deactivates donor, pauses notifications | Automated / Vitest | PASSED |
+| TC-G3-012 | History | Empty response history state | Returns clean empty array when no responses exist | Automated / Vitest | PASSED |
+| TC-G3-013 | History | Retrieve response records | Returns chronological response history for donor | Automated / Vitest | PASSED |
+| TC-G3-014 | Response | Record emergency SOS response | Inserts accepted/declined response into `donor_responses` | Automated / Vitest | PASSED |
+| TC-G3-015 | Security | RLS donor profile isolation | Rejects unauthorized cross-donor profile queries | Automated / Vitest | PASSED |
+| TC-G3-016 | Security | PostGIS location coordinate privacy | Coordinates never returned to unauthorized users | Automated / Vitest | PASSED |
+| TC-G3-017 | Database | PostGIS geometry sync trigger | Point geometry automatically generated from lat/lng | Automated / SQL | PASSED |
+| TC-G3-018 | Build | Hermes production bundle with donor center | `npx expo export` bundles DonorDashboardScreen cleanly | Automated / CLI | PASSED |
