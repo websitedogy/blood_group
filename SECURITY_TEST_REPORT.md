@@ -59,3 +59,19 @@
 | SEC-G4-003 | Accidental Duplicate Broadcast Suppression | PASSED | `emergencyService` enforces an in-flight key lock on composite payload (`requester_id + patient + blood_group + hospital`) to block race conditions and spam. |
 | SEC-G4-004 | Request Expiry Boundary | PASSED | Hard 24-hour expiration (`expires_at = NOW() + INTERVAL '24 hours'`) enforced. Expired requests automatically excluded from PostGIS matching. |
 | SEC-G4-005 | Status Audit Trail Immutability | PASSED | PostgreSQL trigger `tr_log_request_status` captures every status transition with caller UID and timestamp. History cannot be altered by users. |
+
+---
+
+## Gate 5: Four-Channel Notifications & Delivery Security Assessment
+
+**Assessment Date**: 2026-11-22  
+**Scope**: Channel failure isolation, pre-dispatch consent gating, webhook replay defense, and provider charge guards.
+
+| Check Item | Description | Result | Details |
+|---|---|---|---|
+| SEC-G5-001 | Unapproved Provider Charges Guard | PASSED | Verified zero real paid provider calls or SMS charges are triggered during testing; mocked and sandboxed adapters used exclusively. |
+| SEC-G5-002 | Channel Failure Blast Radius Isolation | PASSED | WhatsApp, SMS, Push, and Email run as independent jobs; exceptions or timeouts in one channel cannot block or poison other channels. |
+| SEC-G5-003 | Pre-Dispatch Consent & Expiry Gate | PASSED | Prior to actual provider dispatch, job execution validates donor active consent (`consent_given`) and request validity. Dispatches cancelled cleanly if consent revoked. |
+| SEC-G5-004 | Delivery Confirmation Truthfulness | PASSED | Provider submission response (`HTTP 200/accepted`) is strictly persisted as `sent`, NEVER falsely recorded as `delivered`. `delivered` requires verified inbound delivery receipt. |
+| SEC-G5-005 | Webhook Replay & Duplicate Attack Defense | PASSED | Inbound delivery webhooks are checked against `notification_delivery_webhooks(provider, provider_message_id, event_type)` to defeat duplicate webhook replay attacks. |
+| SEC-G5-006 | Dead-Letter Queue Quarantine | PASSED | Repeated provider failures (>= 3 attempts) are quarantined to `dead_letter` status with captured error reason to prevent infinite retry loops. |

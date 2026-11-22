@@ -28,3 +28,9 @@
 | Bug ID | Severity | Feature / Component | Description | Root Cause | Fix Applied | Status |
 |---|---|---|---|---|---|---|
 | BUG-G4-001 | Low | Test Suite | Supabase query builder `.select()` method undefined on in-flight delay mock | `insert()` mock returned Promise rather than builder instance | Updated mock to return query builder with delayed `single()` promise | RESOLVED |
+
+## Gate 5: Notifications Defects
+
+| Bug ID | Severity | Feature / Component | Description | Root Cause | Fix Applied | Status |
+|---|---|---|---|---|---|---|
+| BUG-G5-001 | Low | Test Suite | Cross-table mock collision where query builder returned request status during job status updates | Single mock builder shared across `emergency_requests`, `donor_profiles`, and `notification_jobs` | Implemented table-aware mock routing in `setupMockTables` | RESOLVED |

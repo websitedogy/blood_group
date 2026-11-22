@@ -9,14 +9,14 @@
 
 | Metric | Required Result | Actual Result |
 |---|---|---|
-| Tests written | Actual count | 67 |
-| Tests executed | Actual count | 67 |
-| Passed | Actual count | 66 |
+| Tests written | Actual count | 81 |
+| Tests executed | Actual count | 81 |
+| Passed | Actual count | 80 |
 | Failed | Actual count | 0 |
 | Blocked | Actual count | 1 (TC-G2-018: Live SMS OTP provider requires activation in Supabase dashboard) |
 | Critical defects | Actual count | 0 |
 | High defects | Actual count | 0 |
-| Regression result | Actual result | 100% of Gates 1, 2 & 3 tests re-executed and PASSED |
+| Regression result | Actual result | 100% of Gates 1, 2, 3 & 4 tests re-executed and PASSED |
 | Manual tests pending | Exact list | Configure SMS provider (Twilio/MessageBird/Vonage) in Supabase Auth Dashboard |
 
 ---
@@ -86,7 +86,7 @@
 | TC-G3-017 | PostGIS Location Sync Trigger | PASSED | DDL trigger definition verified. |
 | TC-G3-018 | Production Hermes Bundle Export | PASSED | Bundled modules with 0 errors. |
 
-### Gate 4: Emergency Requests & PostGIS Matching Tests
+### Gate 4: Emergency Requests & Matching Tests (Regression Suite)
 
 | Test ID | Title | Status | Execution Details |
 |---|---|---|---|
@@ -108,4 +108,23 @@
 | TC-G4-016 | Status Audit History Trail | PASSED | Logged audit trail for every status transition. |
 | TC-G4-017 | PostGIS Donor Matching RPC | PASSED | Calculated distance and returned consented active donors. |
 | TC-G4-018 | Coordinate Privacy Omission | PASSED | Verified raw coordinates and phones are NOT in response. |
-| TC-G4-019 | Production Hermes Bundle Export | PASSED | Bundled 600 iOS (2.16 MB) & 599 Android (2.17 MB) modules. |
+| TC-G4-019 | Production Hermes Bundle Export | PASSED | Bundled modules with 0 errors. |
+
+### Gate 5: Four-Channel Notifications Tests
+
+| Test ID | Title | Status | Execution Details |
+|---|---|---|---|
+| TC-G5-001 | 4-Channel Independent Job Creation | PASSED | Created independent queued jobs for WhatsApp, SMS, Push, and Email. |
+| TC-G5-002 | Idempotency Duplicate Prevention | PASSED | Blocked duplicate jobs with unique composite key. |
+| TC-G5-003 | WhatsApp Failure Isolation | PASSED | WhatsApp failure did not impede SMS or Push dispatch. |
+| TC-G5-004 | SMS Failure Isolation | PASSED | SMS failure did not impede WhatsApp or Push dispatch. |
+| TC-G5-005 | Consent Withdrawal Pre-Dispatch Guard | PASSED | Pre-dispatch aborted job if donor revoked consent. |
+| TC-G5-006 | Notification Pause Pre-Dispatch Guard | PASSED | Pre-dispatch aborted job if donor paused notifications. |
+| TC-G5-007 | Request Cancelled Pre-Dispatch Guard | PASSED | Pre-dispatch aborted job if request was cancelled. |
+| TC-G5-008 | Request Fulfilled Pre-Dispatch Guard | PASSED | Pre-dispatch aborted job if request was fulfilled. |
+| TC-G5-009 | Request Expired Pre-Dispatch Guard | PASSED | Pre-dispatch aborted job if 24h deadline elapsed. |
+| TC-G5-010 | Dead-Letter Queueing | PASSED | Moved failed job to dead_letter after 3 attempts. |
+| TC-G5-011 | Provider Acceptance vs Delivery Guarantee | PASSED | Provider submission marked 'sent', strictly NOT 'delivered'. |
+| TC-G5-012 | Inbound Delivery Webhook | PASSED | Delivery receipt webhook updated status to 'delivered'. |
+| TC-G5-013 | Inbound Webhook Replay Defense | PASSED | Duplicate webhook requests rejected idempotently. |
+| TC-G5-014 | Dispatch Summary Aggregation | PASSED | Aggregated channel metrics by status cleanly. |

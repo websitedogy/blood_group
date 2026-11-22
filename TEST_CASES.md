@@ -86,3 +86,22 @@
 | TC-G4-017 | PostGIS | Find matching donors RPC | Calculates distance and returns consented active donors | Automated / Vitest | PASSED |
 | TC-G4-018 | Privacy | Exact coordinate omission | Guarantees raw coordinates and phones are NOT returned | Automated / Vitest | PASSED |
 | TC-G4-019 | Build | Hermes production bundle | Bundles emergency SOS screen with 0 errors | Automated / CLI | PASSED |
+
+## Gate 5: Four-Channel Notifications Test Cases
+
+| Test ID | Test Category | Description | Expected Result | Execution Type | Status |
+|---|---|---|---|---|---|
+| TC-G5-001 | Queue | 4-Channel job creation | Creates independent queued jobs for each consented channel | Automated / Vitest | PASSED |
+| TC-G5-002 | Idempotency | Composite key duplicate prevention | Blocks duplicate jobs using request_id + donor_id + channel | Automated / Vitest | PASSED |
+| TC-G5-003 | Isolation | WhatsApp failure isolation | WhatsApp failure does not block SMS, Email, or Push | Automated / Vitest | PASSED |
+| TC-G5-004 | Isolation | SMS failure isolation | SMS failure does not block WhatsApp, Email, or Push | Automated / Vitest | PASSED |
+| TC-G5-005 | Pre-Dispatch | Consent withdrawal guard | Pre-dispatch cancels job if donor withdrew consent | Automated / Vitest | PASSED |
+| TC-G5-006 | Pre-Dispatch | Notification pause guard | Pre-dispatch cancels job if donor paused notifications | Automated / Vitest | PASSED |
+| TC-G5-007 | Pre-Dispatch | Request cancellation guard | Pre-dispatch cancels job if request was cancelled | Automated / Vitest | PASSED |
+| TC-G5-008 | Pre-Dispatch | Request fulfillment guard | Pre-dispatch cancels job if request was fulfilled | Automated / Vitest | PASSED |
+| TC-G5-009 | Pre-Dispatch | Request expiration guard | Pre-dispatch cancels job if 24h deadline elapsed | Automated / Vitest | PASSED |
+| TC-G5-010 | Reliability | Dead-letter queue transition | Moves job to dead_letter when attempts reach max_attempts (3) | Automated / Vitest | PASSED |
+| TC-G5-011 | Delivery | Provider submission vs delivery | Provider submission marked 'sent', strictly NOT 'delivered' | Automated / Vitest | PASSED |
+| TC-G5-012 | Webhook | Inbound delivery webhook | Valid delivery receipt updates status to 'delivered' | Automated / Vitest | PASSED |
+| TC-G5-013 | Webhook | Webhook replay defense | Duplicate webhook payloads rejected idempotently | Automated / Vitest | PASSED |
+| TC-G5-014 | Monitoring | Dispatch summary aggregation | Aggregates job counts by channel and status | Automated / Vitest | PASSED |

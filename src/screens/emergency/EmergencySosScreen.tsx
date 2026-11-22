@@ -16,6 +16,7 @@ import {
 } from '../../types/emergency';
 import { BloodGroup } from '../../types/donor';
 import { VALID_BLOOD_GROUPS } from '../../utils/validation';
+import NotificationDispatchModal from '../../components/notifications/NotificationDispatchModal';
 
 interface EmergencySosScreenProps {
   userId: string;
@@ -44,6 +45,7 @@ export default function EmergencySosScreen({
   const [userRequests, setUserRequests] = useState<EmergencyRequest[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [selectedRequestIdForModal, setSelectedRequestIdForModal] = useState<string | null>(null);
 
   // Fetch active requests
   const loadUserRequests = useCallback(async () => {
@@ -347,20 +349,37 @@ export default function EmergencySosScreen({
                 Created: {new Date(req.created_at).toLocaleString()}
               </Text>
 
-              {req.status !== 'cancelled' && req.status !== 'fulfilled' && (
+              <View style={styles.actionBtnRow}>
                 <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => handleCancelRequest(req.id)}
+                  style={styles.statusViewButton}
+                  onPress={() => setSelectedRequestIdForModal(req.id)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Cancel emergency request for ${req.patient_name}`}
+                  accessibilityLabel="View 4-channel dispatch status"
                 >
-                  <Text style={styles.cancelButtonText}>Cancel Request</Text>
+                  <Text style={styles.statusViewButtonText}>📡 4-Channel Status</Text>
                 </TouchableOpacity>
-              )}
+
+                {req.status !== 'cancelled' && req.status !== 'fulfilled' && (
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={() => handleCancelRequest(req.id)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Cancel emergency request for ${req.patient_name}`}
+                  >
+                    <Text style={styles.cancelButtonText}>Cancel Request</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           ))
         )}
       </View>
+
+      <NotificationDispatchModal
+        visible={!!selectedRequestIdForModal}
+        requestId={selectedRequestIdForModal}
+        onClose={() => setSelectedRequestIdForModal(null)}
+      />
     </ScrollView>
   );
 }
@@ -608,6 +627,24 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 12,
     color: '#dc2626',
+    fontWeight: '600',
+  },
+  actionBtnRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 6,
+  },
+  statusViewButton: {
+    backgroundColor: '#eff6ff',
+    borderWidth: 1,
+    borderColor: '#3b82f6',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+  },
+  statusViewButtonText: {
+    fontSize: 12,
+    color: '#1d4ed8',
     fontWeight: '600',
   },
   errorBox: {

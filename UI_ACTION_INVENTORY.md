@@ -66,3 +66,26 @@
 | **Accessibility Label** | "Select required blood group [BG]" | "[Decrease/Increase] units needed" | "Select urgency level [LVL]" | "I confirm all entered emergency details are accurate" | "Broadcast Emergency SOS request" | "Cancel emergency request for [Patient]" |
 | **Automated Test ID** | `TC-G4-001`, `TC-G4-002` | `TC-G4-003`, `TC-G4-004` | `TC-G4-001` | `TC-G4-008` | `TC-G4-009`, `TC-G4-010` | `TC-G4-013` |
 | **Test Result** | PASSED | PASSED | PASSED | PASSED | PASSED | PASSED |
+
+---
+
+## Gate 5: Four-Channel Notifications Action Inventory
+
+| Field | Action 19: View 4-Channel Status Button | Action 20: Close Dispatch Monitor Modal |
+|---|---|---|
+| **Screen Name** | `EmergencySosScreen` (Request List Item) | `NotificationDispatchModal` |
+| **Component Name** | `TouchableOpacity` (Blue Badge Button) | `TouchableOpacity` (Primary Grey) |
+| **Visible Label** | "📡 4-Channel Status" | "Close" |
+| **Expected Action** | Opens modal displaying aggregated delivery status for WhatsApp, SMS, Push, Email | Closes modal and returns to Emergency SOS Screen |
+| **Navigation Destination** | Opens `NotificationDispatchModal` | Returns to `EmergencySosScreen` |
+| **API / DB Operation** | `notification_jobs.select` (aggregated by channel and status) | Local modal visibility state (`visible = false`) |
+| **Required Role / Permission** | Authenticated Request Owner (`requester_id = auth.uid()`) | Authenticated User |
+| **Loading State** | Shows `ActivityIndicator` inside modal while fetching summary | Immediate close |
+| **Success Result** | Displays total jobs, sent, delivered, failed, and channel breakdown | Dismisses modal |
+| **Error Result** | Displays fallback empty state banner | N/A |
+| **Disabled State** | Interactive whenever request list is displayed | Always interactive |
+| **Duplicate-Tap Behavior** | Debounced | Debounced |
+| **Offline Behavior** | Shows cached counts or error message | Operates locally |
+| **Accessibility Label** | "View 4-channel dispatch status" | "Close notification dispatch monitor" |
+| **Automated Test ID** | `TC-G5-013` | `TC-G5-014` |
+| **Test Result** | PASSED | PASSED |

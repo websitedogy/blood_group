@@ -54,7 +54,20 @@
   - [x] TypeScript check passed (`npm run typecheck` - 0 errors).
   - [x] ESLint passed (`npm run lint` - 0 warnings/errors).
   - [x] Production Hermes bundle export passed (`npx expo export` - iOS 2.16 MB / Android 2.17 MB).
-- [ ] **Gate 5 – Notifications**
+- [x] **Gate 5 – Notifications**
+  - [x] Database schema for `notification_jobs` queue and `notification_delivery_webhooks` deduplication table written (`supabase/migrations/20261122000004_notifications_schema.sql`).
+  - [x] Independent job generation per channel for eligible and consented donors (`notificationService.createNotificationJobsForMatchedDonors`).
+  - [x] Channel blast radius isolation verified: WhatsApp failure does not block SMS, Email, or Push; SMS failure does not block other channels.
+  - [x] Pre-dispatch safety gates: aborts dispatch (`cancelled_pre_dispatch`) if donor withdrew consent, paused alerts, or if request was cancelled/fulfilled/expired.
+  - [x] Duplicate job prevention enforced with unique composite idempotency key (`request_id + donor_id + channel`).
+  - [x] Exponential backoff / retry attempts capped at 3 with automatic `dead_letter` quarantine.
+  - [x] Provider submission response persisted as `sent`, strictly NOT reported as `delivered`.
+  - [x] Delivery receipts verified and processed via webhook handler (`handleDeliveryWebhook`) with duplicate replay attack prevention.
+  - [x] Aggregated 4-channel dispatch monitoring modal component (`NotificationDispatchModal.tsx`) wired to SOS requests.
+  - [x] Automated test suite passed (84/84 tests passed across 5 test files in Vitest).
+  - [x] TypeScript check passed (`npm run typecheck` - 0 errors).
+  - [x] ESLint passed (`npm run lint` - 0 warnings/errors).
+  - [x] Production Hermes bundle export passed (`npx expo export` - iOS 2.18 MB / Android 2.19 MB).
 - [ ] **Gate 6 – Responses, Chat & Contact Consent**
 - [ ] **Gate 7 – Hospital & Blood Bank**
 - [ ] **Gate 8 – AI & Community**
