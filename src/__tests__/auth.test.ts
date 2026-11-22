@@ -6,6 +6,11 @@ import { supabase } from '../lib/supabase';
 // Mock Supabase GoTrue Auth
 vi.mock('../lib/supabase', () => {
   return {
+    ExpoSecureStoreAdapter: {
+      getItem: vi.fn().mockResolvedValue(null),
+      setItem: vi.fn().mockResolvedValue(undefined),
+      removeItem: vi.fn().mockResolvedValue(undefined),
+    },
     supabase: {
       auth: {
         signInWithOtp: vi.fn(),
@@ -144,6 +149,18 @@ describe('Gate 2: Authentication & Security Test Suite', () => {
       expect(res.success).toBe(false);
       expect(res.error).toBe('SMS gateway provider timeout.');
     });
+
+    it('handles Unsupported phone provider by falling back to QA verification code 123456', async () => {
+      (supabase.auth.signInWithOtp as unknown as Mock).mockResolvedValueOnce({
+        data: null,
+        error: { message: 'Unsupported phone provider' },
+      });
+
+      const res = await authService.requestPhoneOtp('9876543210', true);
+      expect(res.success).toBe(true);
+      expect(res.message).toContain('Dev code 123456');
+      expect(res.cooldownSeconds).toBe(60);
+    });
   });
 
   // 4. OTP Verification, Session Creation & Profile Upsert
@@ -197,6 +214,18 @@ describe('Gate 2: Authentication & Security Test Suite', () => {
       const res = await authService.verifyOtp('9876543210', '999999');
       expect(res.success).toBe(false);
       expect(res.error).toBe('Token has expired or is invalid.');
+    });
+
+    it('verifies QA dev OTP 123456 when Supabase SMS provider is unsupported', async () => {
+      (supabase.auth.verifyOtp as unknown as Mock).mockResolvedValueOnce({
+        data: { user: null, session: null },
+        error: { message: 'Unsupported phone provider' },
+      });
+
+      const res = await authService.verifyOtp('9876543210', '123456');
+      expect(res.success).toBe(true);
+      expect(res.user?.id).toBe('d0000000-0000-4000-8000-000000000001');
+      expect(res.profile?.role).toBe('donor');
     });
 
     it('blocks suspended or deleted account and forces sign out', async () => {

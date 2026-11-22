@@ -6,7 +6,7 @@ const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://aqvqhgpcjom
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_j8VWn50vtSkKtENvaS1-8g_rSlYtryX';
 
 // Platform Secure Storage Adapter for Supabase GoTrue session persistence
-const ExpoSecureStoreAdapter = {
+export const ExpoSecureStoreAdapter = {
   getItem: async (key: string): Promise<string | null> => {
     try {
       if (Platform.OS === 'web') {

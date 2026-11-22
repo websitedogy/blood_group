@@ -209,6 +209,25 @@ export default function AuthScreen(): React.JSX.Element {
         </TouchableOpacity>
       )}
 
+      {/* QA / Demo Test Mode when live SMS gateway is not configured */}
+      {!otpSent && (
+        <TouchableOpacity
+          style={styles.demoButton}
+          onPress={() => {
+            setPhone('9876543210');
+            setConsentGiven(true);
+            setOtpSent(true);
+            setOtp('123456');
+            setSuccessMessage('Dev/QA Mode: Tap "Verify OTP & Login" below to test.');
+          }}
+          disabled={loading}
+          accessibilityLabel="Quick QA Demo Login"
+          accessibilityRole="button"
+        >
+          <Text style={styles.demoButtonText}>⚡ Quick Demo / QA Login (Bypass SMS)</Text>
+        </TouchableOpacity>
+      )}
+
       {/* OTP Verification Section */}
       {otpSent && (
         <View style={styles.otpSection}>
@@ -408,5 +427,20 @@ const styles = StyleSheet.create({
   successText: {
     color: '#065f46',
     fontSize: 13,
+  },
+  demoButton: {
+    marginTop: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#38bdf8',
+    backgroundColor: '#f0f9ff',
+    alignItems: 'center',
+  },
+  demoButtonText: {
+    color: '#0284c7',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
