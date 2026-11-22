@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { authService } from '../../services/authService';
 import { UserProfile } from '../../types/auth';
-import DonorDashboardScreen from '../donor/DonorDashboardScreen';
+import MainAppScreen from '../MainAppScreen';
 
 export default function AuthScreen(): React.JSX.Element {
   // Screen and form state
@@ -126,10 +126,10 @@ export default function AuthScreen(): React.JSX.Element {
     setLoading(false);
   };
 
-  // Authenticated View: Donor Control Center & Dashboard
+  // Authenticated View: Complete Main App with Bottom Navigation
   if (authenticatedUser) {
     return (
-      <DonorDashboardScreen
+      <MainAppScreen
         userId={authenticatedUser.id}
         phone={authenticatedUser.phone || phone}
         onLogout={handleLogout}
