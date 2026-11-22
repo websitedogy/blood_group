@@ -1,4 +1,5 @@
 import { BloodGroup, NotificationChannel } from '../types/donor';
+import { CreateEmergencyRequestParams } from '../types/emergency';
 
 /**
  * Validates and normalizes phone numbers into E.164 format.
@@ -88,4 +89,65 @@ export function validateRadius(radius: number): { isValid: boolean; value?: numb
   }
 
   return { isValid: true, value: Math.round(radius) };
+}
+
+/**
+ * Validates parameters for creating an emergency blood request.
+ */
+export function validateEmergencyRequest(params: CreateEmergencyRequestParams): { isValid: boolean; error?: string } {
+  if (!params.patient_name || params.patient_name.trim().length === 0) {
+    return { isValid: false, error: 'Patient name is mandatory.' };
+  }
+
+  const bgVal = validateBloodGroup(params.blood_group);
+  if (!bgVal.isValid) {
+    return { isValid: false, error: bgVal.error };
+  }
+
+  if (
+    typeof params.units_needed !== 'number' ||
+    isNaN(params.units_needed) ||
+    params.units_needed < 1 ||
+    params.units_needed > 20
+  ) {
+    return { isValid: false, error: 'Units needed must be between 1 and 20 units.' };
+  }
+
+  if (!params.hospital_name || params.hospital_name.trim().length === 0) {
+    return { isValid: false, error: 'Hospital name is mandatory.' };
+  }
+
+  if (!params.hospital_address || params.hospital_address.trim().length === 0) {
+    return { isValid: false, error: 'Hospital address is mandatory.' };
+  }
+
+  const phoneVal = validateAndFormatPhone(params.contact_phone);
+  if (!phoneVal.isValid) {
+    return { isValid: false, error: phoneVal.error || 'Valid contact phone number is mandatory.' };
+  }
+
+  if (
+    typeof params.latitude !== 'number' ||
+    isNaN(params.latitude) ||
+    params.latitude < -90 ||
+    params.latitude > 90
+  ) {
+    return { isValid: false, error: 'Valid latitude coordinate between -90 and 90 is required.' };
+  }
+
+  if (
+    typeof params.longitude !== 'number' ||
+    isNaN(params.longitude) ||
+    params.longitude < -180 ||
+    params.longitude > 180
+  ) {
+    return { isValid: false, error: 'Valid longitude coordinate between -180 and 180 is required.' };
+  }
+
+  // Ensure AI-extracted fields require explicit user confirmation
+  if (params.is_ai_extracted && params.user_confirmed !== true) {
+    return { isValid: false, error: 'AI-extracted request fields require explicit user review and confirmation.' };
+  }
+
+  return { isValid: true };
 }

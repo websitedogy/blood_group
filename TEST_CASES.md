@@ -62,3 +62,27 @@
 | TC-G3-016 | Security | PostGIS location coordinate privacy | Coordinates never returned to unauthorized users | Automated / Vitest | PASSED |
 | TC-G3-017 | Database | PostGIS geometry sync trigger | Point geometry automatically generated from lat/lng | Automated / SQL | PASSED |
 | TC-G3-018 | Build | Hermes production bundle with donor center | `npx expo export` bundles DonorDashboardScreen cleanly | Automated / CLI | PASSED |
+
+## Gate 4: Emergency Requests & PostGIS Matching Test Cases
+
+| Test ID | Test Category | Description | Expected Result | Execution Type | Status |
+|---|---|---|---|---|---|
+| TC-G4-001 | Validation | Valid emergency parameters | Accepts complete genuine emergency payload | Automated / Vitest | PASSED |
+| TC-G4-002 | Validation | Missing patient name | Rejects with 'Patient name is mandatory' | Automated / Vitest | PASSED |
+| TC-G4-003 | Validation | Invalid blood group | Rejects non-clinical blood group | Automated / Vitest | PASSED |
+| TC-G4-004 | Validation | Zero or negative units | Rejects unit count < 1 | Automated / Vitest | PASSED |
+| TC-G4-005 | Validation | Excessive units | Rejects unit count > 20 | Automated / Vitest | PASSED |
+| TC-G4-006 | Validation | Missing hospital name & address | Rejects empty hospital name or address | Automated / Vitest | PASSED |
+| TC-G4-007 | Validation | Invalid contact phone | Rejects invalid attendant phone numbers | Automated / Vitest | PASSED |
+| TC-G4-008 | Validation | Out of range coordinates | Rejects latitude outside [-90, 90] and longitude [-180, 180] | Automated / Vitest | PASSED |
+| TC-G4-009 | Compliance | Mandatory AI field confirmation | Rejects unconfirmed AI-extracted emergency fields | Automated / Vitest | PASSED |
+| TC-G4-010 | Lifecycle | Create request with 24h expiry | Generates pending_verification request with unique UUID | Automated / Vitest | PASSED |
+| TC-G4-011 | Reliability | Prevent duplicate submissions | Blocks concurrent duplicate submissions via key lock | Automated / Vitest | PASSED |
+| TC-G4-012 | Lifecycle | Verify emergency request | Transitions status from pending_verification to verified | Automated / Vitest | PASSED |
+| TC-G4-013 | Lifecycle | Broadcast emergency request | Transitions status from verified to broadcasting | Automated / Vitest | PASSED |
+| TC-G4-014 | Lifecycle | Cancel emergency request | Requester cancels request and updates state to cancelled | Automated / Vitest | PASSED |
+| TC-G4-015 | Lifecycle | Fulfill emergency request | Marks fulfilled upon completed blood donation | Automated / Vitest | PASSED |
+| TC-G4-016 | Audit | Status transition history | Logs audit trail for every status transition | Automated / Vitest | PASSED |
+| TC-G4-017 | PostGIS | Find matching donors RPC | Calculates distance and returns consented active donors | Automated / Vitest | PASSED |
+| TC-G4-018 | Privacy | Exact coordinate omission | Guarantees raw coordinates and phones are NOT returned | Automated / Vitest | PASSED |
+| TC-G4-019 | Build | Hermes production bundle | Bundles emergency SOS screen with 0 errors | Automated / CLI | PASSED |

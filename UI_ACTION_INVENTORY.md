@@ -43,3 +43,26 @@
 | **Accessibility Label** | "Select blood group [BG]" | "Mark yourself [un]available" | "[Pause/Resume] notifications" | "[Decrease/Increase] alert radius" | "Toggle notification channel [CH]" | "Withdraw emergency communication consent" |
 | **Automated Test ID** | `TC-G3-001` - `TC-G3-005` | `TC-G3-008` | `TC-G3-009` | `TC-G3-006`, `TC-G3-007` | `TC-G3-010` | `TC-G3-011` |
 | **Test Result** | PASSED | PASSED | PASSED | PASSED | PASSED | PASSED |
+
+---
+
+## Gate 4: Emergency SOS & Matching Action Inventory
+
+| Field | Action 13: SOS Blood Group Chip | Action 14: Adjust Units Needed | Action 15: Urgency Selector | Action 16: Genuine Need Confirmation | Action 17: Broadcast SOS Button | Action 18: Cancel SOS Button |
+|---|---|---|---|---|---|---|
+| **Screen Name** | `EmergencySosScreen` | `EmergencySosScreen` | `EmergencySosScreen` | `EmergencySosScreen` | `EmergencySosScreen` | `EmergencySosScreen` |
+| **Component Name** | `TouchableOpacity` (Chip) | `TouchableOpacity` (Stepper) | `TouchableOpacity` (Chip) | `TouchableOpacity` (Checkbox) | `TouchableOpacity` (Primary Red) | `TouchableOpacity` (Outline) |
+| **Visible Label** | Blood Group (e.g. "B+", "O-") | "- 1 Unit" / "+ 1 Unit" | "CRITICAL", "URGENT", "STANDARD" | Checkbox toggle | "🚨 BROADCAST EMERGENCY SOS" | "Cancel Request" |
+| **Expected Action** | Select needed patient blood group | Change requested units (1–20) | Select triage priority level | Confirm details are authentic | Validate & insert emergency request | Cancel pending emergency request |
+| **Navigation Destination** | Stays on SOS form | Stays on SOS form | Stays on SOS form | Stays on SOS form | Stays on SOS form (Refreshes list) | Stays on SOS form (Refreshes list) |
+| **API / DB Operation** | Form state | Form state | Form state | Form state | `emergency_requests.insert` | `emergency_requests.update(status='cancelled')` |
+| **Required Role / Permission** | Authenticated User | Authenticated User | Authenticated User | Authenticated User | Authenticated User | Request Creator (`requester_id = auth.uid()`) |
+| **Loading State** | Disables chips during submit | Disables stepper during submit | Disables chips during submit | Disables during submit | Displays `ActivityIndicator`, disables | Disables during submit |
+| **Success Result** | Chip highlighted | Unit count updates | Urgency chip highlighted | Checkmark displayed | Clears form, adds request to list, displays ID | Status badge switches to CANCELLED |
+| **Error Result** | N/A | Bound to 1–20 range | N/A | Cannot submit if unchecked | Displays validation or server error alert | Displays cancellation error alert |
+| **Disabled State** | Disabled while submitting | Disabled while submitting | Disabled while submitting | Disabled while submitting | Disabled while submitting | Disabled while cancelling |
+| **Duplicate-Tap Behavior** | Debounced | Debounced | Debounced | Debounced | In-flight submission lock blocks duplicate taps | Debounced |
+| **Offline Behavior** | Operates locally | Operates locally | Operates locally | Operates locally | Catches error, shows network alert | Catches error, shows network alert |
+| **Accessibility Label** | "Select required blood group [BG]" | "[Decrease/Increase] units needed" | "Select urgency level [LVL]" | "I confirm all entered emergency details are accurate" | "Broadcast Emergency SOS request" | "Cancel emergency request for [Patient]" |
+| **Automated Test ID** | `TC-G4-001`, `TC-G4-002` | `TC-G4-003`, `TC-G4-004` | `TC-G4-001` | `TC-G4-008` | `TC-G4-009`, `TC-G4-010` | `TC-G4-013` |
+| **Test Result** | PASSED | PASSED | PASSED | PASSED | PASSED | PASSED |

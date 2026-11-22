@@ -9,14 +9,14 @@
 
 | Metric | Required Result | Actual Result |
 |---|---|---|
-| Tests written | Actual count | 48 |
-| Tests executed | Actual count | 48 |
-| Passed | Actual count | 47 |
+| Tests written | Actual count | 67 |
+| Tests executed | Actual count | 67 |
+| Passed | Actual count | 66 |
 | Failed | Actual count | 0 |
 | Blocked | Actual count | 1 (TC-G2-018: Live SMS OTP provider requires activation in Supabase dashboard) |
 | Critical defects | Actual count | 0 |
 | High defects | Actual count | 0 |
-| Regression result | Actual result | 100% of Gate 1 & 2 tests re-executed and PASSED |
+| Regression result | Actual result | 100% of Gates 1, 2 & 3 tests re-executed and PASSED |
 | Manual tests pending | Exact list | Configure SMS provider (Twilio/MessageBird/Vonage) in Supabase Auth Dashboard |
 
 ---
@@ -63,7 +63,7 @@
 | TC-G2-017 | Live GoTrue Endpoint Connectivity | PASSED | `https://aqvqhgpcjomrpzvzwreg.supabase.co/auth/v1/health` returned HTTP 200. |
 | TC-G2-018 | Live Supabase SMS Dispatch | BLOCKED | Live GoTrue returned HTTP 400 (`Unsupported phone provider`) pending provider config. |
 
-### Gate 3: Donor Profiles Tests
+### Gate 3: Donor Profiles Tests (Regression Suite)
 
 | Test ID | Title | Status | Execution Details |
 |---|---|---|---|
@@ -84,4 +84,28 @@
 | TC-G3-015 | Donor RLS Isolation | PASSED | Cross-donor queries blocked under RLS. |
 | TC-G3-016 | PostGIS Coordinate Privacy | PASSED | Private coordinates protected from public exposure. |
 | TC-G3-017 | PostGIS Location Sync Trigger | PASSED | DDL trigger definition verified. |
-| TC-G3-018 | Production Hermes Bundle Export | PASSED | Bundled 598 modules on iOS (2.14 MB) & 597 on Android (2.15 MB). |
+| TC-G3-018 | Production Hermes Bundle Export | PASSED | Bundled modules with 0 errors. |
+
+### Gate 4: Emergency Requests & PostGIS Matching Tests
+
+| Test ID | Title | Status | Execution Details |
+|---|---|---|---|
+| TC-G4-001 | Valid Emergency Parameters | PASSED | Verified valid SOS creation parameters. |
+| TC-G4-002 | Missing Patient Name Rejection | PASSED | Rejection on empty patient name verified. |
+| TC-G4-003 | Invalid Blood Group Rejection | PASSED | Rejected non-clinical blood group. |
+| TC-G4-004 | Zero/Negative Units Rejection | PASSED | Rejected units < 1. |
+| TC-G4-005 | Excessive Units Rejection | PASSED | Rejected units > 20. |
+| TC-G4-006 | Missing Hospital Name & Address | PASSED | Rejected empty hospital name and address. |
+| TC-G4-007 | Invalid Attendant Phone | PASSED | Rejected non-standard phone numbers. |
+| TC-G4-008 | Out of Range Lat/Lng Coordinates | PASSED | Rejected coordinates outside valid geographic range. |
+| TC-G4-009 | Mandatory AI Field Confirmation | PASSED | Rejects unconfirmed AI-extracted emergency fields. |
+| TC-G4-010 | Create Request with 24h Expiry | PASSED | Generated pending_verification request with unique UUID. |
+| TC-G4-011 | Duplicate Submission Prevention | PASSED | Blocked concurrent duplicate submissions via key lock. |
+| TC-G4-012 | Verify Request Status | PASSED | Transitioned status from pending_verification to verified. |
+| TC-G4-013 | Broadcast Request Status | PASSED | Transitioned status from verified to broadcasting. |
+| TC-G4-014 | Cancel Emergency Request | PASSED | Requester cancelled request and updated state to cancelled. |
+| TC-G4-015 | Fulfill Emergency Request | PASSED | Marked fulfilled upon completed blood donation. |
+| TC-G4-016 | Status Audit History Trail | PASSED | Logged audit trail for every status transition. |
+| TC-G4-017 | PostGIS Donor Matching RPC | PASSED | Calculated distance and returned consented active donors. |
+| TC-G4-018 | Coordinate Privacy Omission | PASSED | Verified raw coordinates and phones are NOT in response. |
+| TC-G4-019 | Production Hermes Bundle Export | PASSED | Bundled 600 iOS (2.16 MB) & 599 Android (2.17 MB) modules. |

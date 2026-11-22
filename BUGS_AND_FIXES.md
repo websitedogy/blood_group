@@ -22,3 +22,9 @@
 | Bug ID | Severity | Feature / Component | Description | Root Cause | Fix Applied | Status |
 |---|---|---|---|---|---|---|
 | - | - | - | Zero defects discovered in Gate 3 implementation | All unit, component, RLS, and bundle tests passed on initial execution | N/A | NO DEFECTS |
+
+## Gate 4: Emergency Requests Defects
+
+| Bug ID | Severity | Feature / Component | Description | Root Cause | Fix Applied | Status |
+|---|---|---|---|---|---|---|
+| BUG-G4-001 | Low | Test Suite | Supabase query builder `.select()` method undefined on in-flight delay mock | `insert()` mock returned Promise rather than builder instance | Updated mock to return query builder with delayed `single()` promise | RESOLVED |

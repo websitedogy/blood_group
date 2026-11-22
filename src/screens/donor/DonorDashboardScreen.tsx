@@ -15,6 +15,7 @@ import {
   NotificationChannel,
 } from '../../types/donor';
 import { VALID_BLOOD_GROUPS, VALID_NOTIFICATION_CHANNELS } from '../../utils/validation';
+import EmergencySosScreen from '../emergency/EmergencySosScreen';
 
 interface DonorDashboardScreenProps {
   userId: string;
@@ -34,6 +35,7 @@ export default function DonorDashboardScreen({
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<BloodGroup>('O+');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [viewingSos, setViewingSos] = useState<boolean>(false);
 
   // Load donor profile and response history
   const loadDonorData = useCallback(async () => {
@@ -208,6 +210,19 @@ export default function DonorDashboardScreen({
     );
   }
 
+  if (viewingSos) {
+    return (
+      <EmergencySosScreen
+        userId={userId}
+        defaultPhone={phone}
+        onBack={() => {
+          setViewingSos(false);
+          loadDonorData();
+        }}
+      />
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.headerTitle} accessibilityRole="header">
@@ -216,6 +231,16 @@ export default function DonorDashboardScreen({
       <Text style={styles.headerSubtitle}>
         Manage blood group, emergency availability & alert radius
       </Text>
+
+      {/* Emergency SOS Banner Button */}
+      <TouchableOpacity
+        style={styles.sosBannerButton}
+        onPress={() => setViewingSos(true)}
+        accessibilityRole="button"
+        accessibilityLabel="Open Emergency Blood SOS Broadcast Screen"
+      >
+        <Text style={styles.sosBannerText}>🚨 NEED BLOOD? POST EMERGENCY SOS</Text>
+      </TouchableOpacity>
 
       {errorMessage && (
         <View style={styles.errorBox} accessibilityRole="alert">
@@ -469,6 +494,23 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginBottom: 16,
     textAlign: 'center',
+  },
+  sosBannerButton: {
+    backgroundColor: '#b91c1c',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sosBannerText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   card: {
     backgroundColor: '#ffffff',

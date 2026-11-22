@@ -40,7 +40,20 @@
   - [x] TypeScript check passed (`npm run typecheck` - 0 errors).
   - [x] ESLint passed (`npm run lint` - 0 warnings/errors).
   - [x] Production Hermes bundle export passed (`npx expo export` - 0 errors).
-- [ ] **Gate 4 – Emergency Requests & Matching**
+- [x] **Gate 4 – Emergency Requests & Matching**
+  - [x] Database schema, request location sync trigger, status history audit trigger, and PostGIS matching RPC written (`supabase/migrations/20261122000003_emergency_requests_postgis.sql`).
+  - [x] Strict input validation for patient name, blood group, units (1–20), hospital, phone, and coordinates (`validateEmergencyRequest`).
+  - [x] AI-extracted field human confirmation guard enforced.
+  - [x] Accidental duplicate submission lock implemented.
+  - [x] Request lifecycle implemented: pending verification, verified, broadcasting, fulfilled, cancelled, expired.
+  - [x] Status transition audit trail captured.
+  - [x] PostGIS donor matching RPC (`find_matching_donors`) strictly excludes exact donor coordinates, phone, and name.
+  - [x] Emergency SOS UI screen implemented (`EmergencySosScreen.tsx`).
+  - [x] Complete UI Action Inventory for Emergency SOS documented (`UI_ACTION_INVENTORY.md`).
+  - [x] Automated test suite passed (71/71 tests passed across 4 test files in Vitest).
+  - [x] TypeScript check passed (`npm run typecheck` - 0 errors).
+  - [x] ESLint passed (`npm run lint` - 0 warnings/errors).
+  - [x] Production Hermes bundle export passed (`npx expo export` - iOS 2.16 MB / Android 2.17 MB).
 - [ ] **Gate 5 – Notifications**
 - [ ] **Gate 6 – Responses, Chat & Contact Consent**
 - [ ] **Gate 7 – Hospital & Blood Bank**
