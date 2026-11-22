@@ -217,10 +217,11 @@ describe('Gate 2: Authentication & Security Test Suite', () => {
     });
 
     it('verifies QA dev OTP 123456 when Supabase SMS provider is unsupported', async () => {
-      (supabase.auth.verifyOtp as unknown as Mock).mockResolvedValueOnce({
-        data: { user: null, session: null },
+      (supabase.auth.signInWithOtp as unknown as Mock).mockResolvedValueOnce({
+        data: null,
         error: { message: 'Unsupported phone provider' },
       });
+      await authService.requestPhoneOtp('9876543210', true);
 
       const res = await authService.verifyOtp('9876543210', '123456');
       expect(res.success).toBe(true);

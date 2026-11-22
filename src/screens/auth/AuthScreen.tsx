@@ -111,6 +111,27 @@ export default function AuthScreen(): React.JSX.Element {
     }
   };
 
+  // Action: Instant Demo / QA Login
+  const handleDemoLogin = async () => {
+    if (loading) return;
+    setLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setPhone('9876543210');
+    setConsentGiven(true);
+
+    const result = await authService.verifyOtp('9876543210', '123456');
+    setLoading(false);
+
+    if (result.success && result.user) {
+      setAuthenticatedUser(result.user);
+      setUserProfile(result.profile || null);
+      setSuccessMessage('Logged in with Demo Donor account.');
+    } else {
+      setErrorMessage(result.error || 'Failed to authenticate demo user.');
+    }
+  };
+
   // Action: Logout
   const handleLogout = async () => {
     if (loading) return;
@@ -213,18 +234,16 @@ export default function AuthScreen(): React.JSX.Element {
       {!otpSent && (
         <TouchableOpacity
           style={styles.demoButton}
-          onPress={() => {
-            setPhone('9876543210');
-            setConsentGiven(true);
-            setOtpSent(true);
-            setOtp('123456');
-            setSuccessMessage('Dev/QA Mode: Tap "Verify OTP & Login" below to test.');
-          }}
+          onPress={handleDemoLogin}
           disabled={loading}
           accessibilityLabel="Quick QA Demo Login"
           accessibilityRole="button"
         >
-          <Text style={styles.demoButtonText}>⚡ Quick Demo / QA Login (Bypass SMS)</Text>
+          {loading ? (
+            <ActivityIndicator color="#0284c7" />
+          ) : (
+            <Text style={styles.demoButtonText}>⚡ Quick Demo / QA Login (Bypass SMS)</Text>
+          )}
         </TouchableOpacity>
       )}
 

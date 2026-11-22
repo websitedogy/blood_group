@@ -18,6 +18,7 @@ export interface VerifyOtpResponse {
 
 // In-memory rate limiting and cooldown state tracker
 const lastOtpSentTimestamps: Record<string, number> = {};
+const devOtpPendingPhones = new Set<string>();
 const OTP_RESEND_COOLDOWN_MS = 60 * 1000; // 60 seconds cooldown
 
 export const authService = {
@@ -66,6 +67,7 @@ export const authService = {
       if (error) {
         if (error.message && error.message.toLowerCase().includes('unsupported phone provider')) {
           lastOtpSentTimestamps[formattedPhone] = Date.now();
+          devOtpPendingPhones.add(formattedPhone);
           return {
             success: true,
             message: 'Live SMS provider not configured in Supabase. Dev code 123456 generated for testing.',
@@ -79,6 +81,7 @@ export const authService = {
         };
       }
 
+      devOtpPendingPhones.delete(formattedPhone);
       lastOtpSentTimestamps[formattedPhone] = Date.now();
 
       return {
@@ -106,46 +109,28 @@ export const authService = {
       return { success: false, error: otpValidation.error || 'Invalid OTP.' };
     }
 
-    try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: phoneValidation.formatted,
-        token: token.trim(),
-        type: 'sms',
-      });
+    const trimmedToken = token.trim();
+    const isDevToken = devOtpPendingPhones.has(phoneValidation.formatted);
 
-      let userId = data?.user?.id;
-      let userPhone = data?.user?.phone || phoneValidation.formatted;
-
-      if (error) {
-        if (
-          error.message &&
-          error.message.toLowerCase().includes('unsupported phone provider') &&
-          token.trim() === '123456'
-        ) {
-          userId = 'd0000000-0000-4000-8000-000000000001';
-          userPhone = phoneValidation.formatted;
-        } else {
-          return {
-            success: false,
-            error: error.message || 'Invalid or expired OTP. Please try again.',
-          };
-        }
-      }
-
-      if (!userId) {
+    // Dev Verification Bypass: If in dev mode (set when live SMS provider is unconfigured),
+    // accept dev OTP 123456 immediately without calling GoTrue
+    if (isDevToken) {
+      if (trimmedToken !== '123456') {
         return {
           success: false,
-          error: 'Verification succeeded but no authenticated user was returned.',
+          error: 'Invalid OTP. Please enter the verification code 123456.',
         };
       }
 
-      // Fetch existing profile or initialize default donor profile with consent
+      const userId = 'd0000000-0000-4000-8000-000000000001';
+      const userPhone = phoneValidation.formatted;
+
       let profile = await authService.getProfile(userId);
 
       if (!profile) {
         profile = await authService.upsertProfile(userId, {
           phone: userPhone,
-          full_name: null,
+          full_name: 'Verified Donor',
           role: 'donor',
           consent_given: true,
           consent_timestamp: new Date().toISOString(),
@@ -167,16 +152,7 @@ export const authService = {
         };
       }
 
-      // Check if account is suspended or deleted
-      if (profile && profile.status !== 'active') {
-        await supabase.auth.signOut();
-        return {
-          success: false,
-          error: `Your account is ${profile.status}. Please contact LIFELOOP support.`,
-        };
-      }
-
-      // Persist session locally
+      // Persist dev session locally in hardware storage
       try {
         await ExpoSecureStoreAdapter.setItem(
           'lifeloop_dev_session',
@@ -186,9 +162,65 @@ export const authService = {
         // Storage fail-safe
       }
 
+      devOtpPendingPhones.delete(phoneValidation.formatted);
+
       return {
         success: true,
         user: { id: userId, phone: userPhone },
+        profile,
+      };
+    }
+
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: phoneValidation.formatted,
+        token: trimmedToken,
+        type: 'sms',
+      });
+
+      if (error) {
+        return {
+          success: false,
+          error: error.message || 'Invalid or expired OTP. Please try again.',
+        };
+      }
+
+      if (!data.user) {
+        return {
+          success: false,
+          error: 'Verification succeeded but no authenticated user was returned.',
+        };
+      }
+
+      const userId = data.user.id;
+      const userPhone = data.user.phone || phoneValidation.formatted;
+
+      // Fetch existing profile or initialize default donor profile with consent
+      let profile = await authService.getProfile(userId);
+
+      if (!profile) {
+        profile = await authService.upsertProfile(userId, {
+          phone: userPhone,
+          full_name: null,
+          role: 'donor',
+          consent_given: true,
+          consent_timestamp: new Date().toISOString(),
+          status: 'active',
+        });
+      }
+
+      // Check if account is suspended or deleted
+      if (profile && profile.status !== 'active') {
+        await supabase.auth.signOut();
+        return {
+          success: false,
+          error: `Your account is ${profile.status}. Please contact LIFELOOP support.`,
+        };
+      }
+
+      return {
+        success: true,
+        user: { id: data.user.id, phone: data.user.phone },
         profile,
       };
     } catch (err: unknown) {
@@ -312,5 +344,6 @@ export const authService = {
     Object.keys(lastOtpSentTimestamps).forEach((key) => {
       delete lastOtpSentTimestamps[key];
     });
+    devOtpPendingPhones.clear();
   },
 };
