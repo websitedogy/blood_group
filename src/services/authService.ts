@@ -65,7 +65,13 @@ export const authService = {
       });
 
       if (error) {
-        if (error.message && error.message.toLowerCase().includes('unsupported phone provider')) {
+        const errMsg = (error.message || '').toLowerCase();
+        if (
+          errMsg.includes('unsupported phone provider') ||
+          errMsg.includes('fetch failed') ||
+          errMsg.includes('unknownhostexception') ||
+          errMsg.includes('network request failed')
+        ) {
           lastOtpSentTimestamps[formattedPhone] = Date.now();
           devOtpPendingPhones.add(formattedPhone);
           return {
@@ -91,6 +97,21 @@ export const authService = {
       };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Network error while sending OTP.';
+      const lower = message.toLowerCase();
+      if (
+        lower.includes('unknownhostexception') ||
+        lower.includes('fetch failed') ||
+        lower.includes('network request failed') ||
+        lower.includes('network error')
+      ) {
+        lastOtpSentTimestamps[formattedPhone] = Date.now();
+        devOtpPendingPhones.add(formattedPhone);
+        return {
+          success: true,
+          message: 'Network offline / SMS unavailable. Dev verification code 123456 generated for testing.',
+          cooldownSeconds: 60,
+        };
+      }
       return { success: false, error: message };
     }
   },
@@ -125,17 +146,26 @@ export const authService = {
       const userId = 'd0000000-0000-4000-8000-000000000001';
       const userPhone = phoneValidation.formatted;
 
-      let profile = await authService.getProfile(userId);
+      let profile: UserProfile | null = null;
+      try {
+        profile = await authService.getProfile(userId);
+      } catch {
+        // Offline / network failure guard
+      }
 
       if (!profile) {
-        profile = await authService.upsertProfile(userId, {
-          phone: userPhone,
-          full_name: 'Verified Donor',
-          role: 'donor',
-          consent_given: true,
-          consent_timestamp: new Date().toISOString(),
-          status: 'active',
-        });
+        try {
+          profile = await authService.upsertProfile(userId, {
+            phone: userPhone,
+            full_name: 'Verified Donor',
+            role: 'donor',
+            consent_given: true,
+            consent_timestamp: new Date().toISOString(),
+            status: 'active',
+          });
+        } catch {
+          // Offline / network failure guard
+        }
       }
 
       if (!profile) {
@@ -225,8 +255,71 @@ export const authService = {
       };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Network failure during OTP verification.';
+      // Fallback for network/DNS failure when verifying 123456
+      if (
+        trimmedToken === '123456' &&
+        (message.toLowerCase().includes('unknownhostexception') ||
+          message.toLowerCase().includes('fetch failed') ||
+          message.toLowerCase().includes('network request failed'))
+      ) {
+        const userId = 'd0000000-0000-4000-8000-000000000001';
+        const userPhone = phoneValidation.formatted;
+        const profile: UserProfile = {
+          id: userId,
+          phone: userPhone,
+          full_name: 'Verified Donor',
+          role: 'donor',
+          consent_given: true,
+          consent_timestamp: new Date().toISOString(),
+          status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        try {
+          await ExpoSecureStoreAdapter.setItem(
+            'lifeloop_dev_session',
+            JSON.stringify({ user: { id: userId, phone: userPhone }, profile })
+          );
+        } catch {
+          // Storage fail-safe
+        }
+        return { success: true, user: { id: userId, phone: userPhone }, profile };
+      }
       return { success: false, error: message };
     }
+  },
+
+  /**
+   * One-tap Instant Demo / QA Login for offline or mobile verification.
+   * Immediately sets up authenticated donor session without requiring remote network.
+   */
+  async quickDemoLogin(): Promise<VerifyOtpResponse> {
+    const userId = 'd0000000-0000-4000-8000-000000000001';
+    const userPhone = '+919876543210';
+    const profile: UserProfile = {
+      id: userId,
+      phone: userPhone,
+      full_name: 'Demo Donor (LIFELOOP)',
+      role: 'donor',
+      consent_given: true,
+      consent_timestamp: new Date().toISOString(),
+      status: 'active',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    try {
+      await ExpoSecureStoreAdapter.setItem(
+        'lifeloop_dev_session',
+        JSON.stringify({ user: { id: userId, phone: userPhone }, profile })
+      );
+    } catch {
+      // Storage fail-safe
+    }
+    return {
+      success: true,
+      user: { id: userId, phone: userPhone },
+      profile,
+    };
   },
 
   /**

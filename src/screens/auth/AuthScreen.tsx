@@ -120,7 +120,7 @@ export default function AuthScreen(): React.JSX.Element {
     setPhone('9876543210');
     setConsentGiven(true);
 
-    const result = await authService.verifyOtp('9876543210', '123456');
+    const result = await authService.quickDemoLogin();
     setLoading(false);
 
     if (result.success && result.user) {

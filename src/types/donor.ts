@@ -4,6 +4,7 @@ export type ResponseStatus = 'accepted' | 'declined' | 'cancelled';
 
 export interface DonorProfile {
   id: string;
+  user_id?: string;
   blood_group: BloodGroup;
   is_available: boolean;
   notifications_paused: boolean;

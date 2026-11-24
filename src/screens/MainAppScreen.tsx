@@ -111,7 +111,7 @@ export default function MainAppScreen({
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#080c14',
   },
   content: {
     flex: 1,
@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    backgroundColor: '#ffffff',
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#0f172a',
     paddingVertical: 8,
     paddingBottom: 12,
   },
@@ -138,11 +138,11 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 11,
-    color: '#6b7280',
+    color: '#64748b',
     fontWeight: '600',
   },
   tabActiveLabel: {
-    color: '#dc2626',
+    color: '#ff2e56',
     fontWeight: '700',
   },
 });
